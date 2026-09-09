@@ -72,3 +72,11 @@ python -m unittest discover -s tests -v
 ```
 
 There are no runtime dependencies. No license is granted by this repository.
+
+## Documentation
+
+See [`docs/README.md`](docs/README.md) for the harness design, its phase
+workflow, and a sanitized reference design for a Korean Linux learning
+service. The service documentation is published as an architecture example;
+the service code and its private executable inputs are not part of this
+repository.
