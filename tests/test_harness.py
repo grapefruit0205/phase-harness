@@ -228,6 +228,20 @@ class HarnessTests(unittest.TestCase):
                                 phase_id="P01", receipt_path=empty_run / "receipt.json", target_status="ready_verify",
                                 snapshot_path=empty_snapshot)
 
+        blocked = Project(self)
+        blocked_run = blocked.root / "legacy"
+        blocked_run.mkdir()
+        blocked_snapshot = blocked_run / "workspace-after.json"
+        blocked_snapshot.write_text(json.dumps(snapshot))
+        receipt["workspace_snapshot_after_sha256"] = hashlib.sha256(blocked_snapshot.read_bytes()).hexdigest()
+        receipt["error"] = "post-run mutation"
+        atomic_json(blocked_run / "receipt.json", receipt)
+        atomic_json(blocked_run / "result.json", result)
+        with self.assertRaisesRegex(HarnessError, "harness error"):
+            import_legacy_phase(blocked.root, blocked.root / "orchestration.json", blocked.root / "progress.json",
+                                phase_id="P01", receipt_path=blocked_run / "receipt.json", target_status="ready_verify",
+                                snapshot_path=blocked_snapshot, baseline_roots=["src"])
+
 
 if __name__ == "__main__":
     unittest.main()

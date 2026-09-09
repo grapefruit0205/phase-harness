@@ -534,6 +534,8 @@ def _validate_legacy_receipt(receipt_path: Path, phase_id: str, role: str) -> di
         raise HarnessError("legacy receipt phase/role mismatch")
     if receipt.get("exit_code") != 0 or receipt.get("finished_at") is None:
         raise HarnessError("legacy receipt does not record a completed exit-0 run")
+    if receipt.get("error") is not None or receipt.get("status") == "blocked":
+        raise HarnessError("legacy receipt records a harness error or blocked status")
     result = receipt.get("result")
     if not isinstance(result, dict) or result.get("status") != "passed" or result.get("blockers") != []:
         raise HarnessError("legacy receipt result is not passed and blocker-free")
